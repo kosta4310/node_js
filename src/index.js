@@ -1,7 +1,5 @@
 import { parseArgs } from "./cli/args.js";
-import { EOL, homedir } from "node:os";
-
-import { start } from "node:repl";
+import { homedir } from "node:os";
 import { handleLine } from "./handleLine.js";
 
 const name = parseArgs();
