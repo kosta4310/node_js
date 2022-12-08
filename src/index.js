@@ -1,10 +1,14 @@
-import { parseArgs } from './cli/args.js';
-import * as readline from "node:readline/promises";
-import { stdin as input, stdout as output } from "node:process";
+import { parseArgs } from "./cli/args.js";
+import { EOL, homedir } from "node:os";
+
+import { start } from "node:repl";
+import { handleLine } from "./handleLine.js";
 
 const name = parseArgs();
-const rl = readline.createInterface({ input, output });
-const answer = await rl.question('hello');
-console.log(answer);
-rl.close();
 
+console.log(`Welcome to the File Manager, ${name}!`);
+
+process.chdir(homedir());
+
+console.log(`You are currently in ${homedir()}`);
+handleLine(name);
