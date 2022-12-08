@@ -1,7 +1,8 @@
 import { cwd, chdir } from "node:process";
 import { dirname, resolve } from "node:path";
+import { list } from "../fs/list.js";
 
-export function nwd(splittenLine) {
+export async function nwd(splittenLine) {
   const [command, path] = splittenLine;
   switch (command) {
     case "up":
@@ -19,7 +20,7 @@ export function nwd(splittenLine) {
         try {
           chdir(resolve(cwd(), path));
         } catch (error) {
-          console.log("Invalid input");
+          console.log("Operation failed");
         }
       }
       break;
@@ -28,7 +29,7 @@ export function nwd(splittenLine) {
       if (path) {
         console.log("Invalid input");
       } else {
-        chdir(dirname(cwd()));
+        await list(cwd());
       }
       break;
 

@@ -6,11 +6,11 @@ import { cwd, stdin as input, stdout as output } from "node:process";
 const rl = readline.createInterface({ input, output });
 
 export function handleLine(name) {
-  rl.on("line", (data) => {
+  rl.on("line", async (data) => {
     if (data === ".exit") {
       rl.emit("SIGINT");
     } else {
-      parseLine(data);
+      await parseLine(data);
       console.log(`You are currently in ${cwd()}`);
     }
   });
