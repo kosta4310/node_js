@@ -1,9 +1,11 @@
-import fs from "fs/promises";
-import path from "path";
-import { getDirname } from "../additional/funcDirname.js";
+import { createReadStream, createWriteStream } from "fs";
+import { resolve, basename } from "path";
+import { pipeline } from "stream/promises";
 
-const __dirname = getDirname(import.meta.url);
+export const copy = async ([path_to_file, path_to_new_directory]) => {
+  const pathToNewFile = resolve(path_to_new_directory, basename(path_to_file));
+  const readStream = createReadStream(path_to_file);
+  const writeStream = createWriteStream(pathToNewFile, { flags: "wx" });
 
-export const copy = async ([ path_to_file, path_to_new_directory ]) => {
-  
+  await pipeline(readStream, writeStream);
 };
