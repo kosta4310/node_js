@@ -1,16 +1,15 @@
 import fs from "fs/promises";
-import { dirname, basename, resolve } from "path";
+import { dirname, resolve } from "path";
 
-export const rename = async ({ firstArgument, secondArgument }) => {
-  const pathToOldFile = firstArgument;
-  const pathToNewFile = resolve(dirname(pathToOldFile), secondArgument);
+export const rename = async ({ pathToFile, secondArgument }) => {
+  const pathToNewFile = resolve(dirname(pathToFile), secondArgument);
 
   try {
-    const files = await fs.readdir(dirname(pathToOldFile));
+    const files = await fs.readdir(dirname(pathToFile));
     if (files.includes(secondArgument)) {
       throw new Error("Operation failed");
     }
-    await fs.rename(pathToOldFile, pathToNewFile);
+    await fs.rename(pathToFile, pathToNewFile);
   } catch (error) {
     console.log("Operation failed");
   }
