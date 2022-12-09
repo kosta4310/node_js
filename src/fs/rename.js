@@ -1,26 +1,17 @@
 import fs from "fs/promises";
-import path from "path";
-import { getDirname } from "../additional/funcDirname.js";
+import { dirname, basename, resolve } from "path";
 
-const __dirname = getDirname(import.meta.url);
-
-export const rename = async () => {
-  const oldName = path.resolve(__dirname, "./files/wrongFilename.txt");
-  const newName = path.resolve(__dirname, "./files/properFilename.md");
-  try {
-    const dirents = await fs.readdir(path.dirname(newName));
-    if (dirents.includes(path.basename(newName))) {
-      throw new Error();
-    }
-  } catch (error) {
-    throw new Error("FS operation failed");
-  }
+export const rename = async ({ firstArgument, secondArgument }) => {
+  const pathToOldFile = firstArgument;
+  const pathToNewFile = resolve(dirname(pathToOldFile), secondArgument);
 
   try {
-    await fs.rename(oldName, newName);
-  } catch (error) {
-    if ((error.code === "ENOENT") | (error.code === "EEXIST")) {
-      throw new Error("FS operation failed");
+    const files = await fs.readdir(dirname(pathToOldFile));
+    if (files.includes(secondArgument)) {
+      throw new Error("Operation failed");
     }
+    await fs.rename(pathToOldFile, pathToNewFile);
+  } catch (error) {
+    console.log("Operation failed");
   }
 };

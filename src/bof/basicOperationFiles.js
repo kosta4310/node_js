@@ -2,10 +2,13 @@ import { read } from "../fs/read.js";
 import { cwd } from "node:process";
 import { create } from "../fs/create.js";
 import { dirname, resolve } from "node:path";
+import { rename } from "../fs/rename.js";
+import { copy } from "../fs/copy.js";
+import * as fs from "node:fs/promises";
 
 export async function bof(splittenLine) {
   const [command, ...path] = splittenLine;
-  const [firstArgument] = path;
+  const [firstArgument, secondArgument] = path;
   switch (command) {
     case "cat":
       if (!path) {
@@ -20,14 +23,22 @@ export async function bof(splittenLine) {
       if (!path) {
         console.log("Invalid input");
       } else {
-        const pathToFile = resolve(dirname(cwd()), firstArgument);
+        const pathToFile = resolve(cwd(), firstArgument);
         await create(pathToFile);
       }
       break;
 
     case "rn":
       if (path && path.length === 2) {
-        console.log(path);
+        await rename({ firstArgument, secondArgument });
+      } else {
+        console.log("Invalid input");
+      }
+      break;
+
+    case "cp":
+      if (path && path.length === 2) {
+        await copy([firstArgument, secondArgument]);
       } else {
         console.log("Invalid input");
       }
