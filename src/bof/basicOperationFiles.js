@@ -1,10 +1,10 @@
 import { read } from "../fs/read.js";
 import { cwd } from "node:process";
 import { create } from "../fs/create.js";
-import { dirname, resolve } from "node:path";
+import { move } from "../fs/move.js";
+import { resolve } from "node:path";
 import { rename } from "../fs/rename.js";
 import { copy } from "../fs/copy.js";
-import * as fs from "node:fs/promises";
 
 export async function bof(splittenLine) {
   const [command, ...path] = splittenLine;
@@ -41,6 +41,14 @@ export async function bof(splittenLine) {
         await copy([firstArgument, secondArgument]).catch(() =>
           console.log("Operation failed")
         );
+      } else {
+        console.log("Invalid input");
+      }
+      break;
+
+    case "mv":
+      if (path && path.length === 2) {
+        await move([firstArgument, secondArgument]);
       } else {
         console.log("Invalid input");
       }
