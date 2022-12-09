@@ -1,5 +1,6 @@
 import { nwd } from "./nwd/nwd.js";
 import { bof } from "./bof/basicOperationFiles.js";
+import { osi } from "./osi/osi.js";
 
 export async function parseLine(data) {
   const splittenLine = data.split(" ");
@@ -8,5 +9,7 @@ export async function parseLine(data) {
     await nwd(splittenLine);
   } else if ("cat add rn cp mv rm".split(" ").includes(command)) {
     await bof(splittenLine);
+  } else if ("os") {
+    await osi(splittenLine);
   } else console.log("Invalid input");
 }
