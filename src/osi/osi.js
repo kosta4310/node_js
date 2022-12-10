@@ -31,6 +31,7 @@ export function osi(splittenLine) {
       break;
 
     default:
+      console.log("Invalid input");
       break;
   }
 }
