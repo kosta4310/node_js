@@ -12,5 +12,7 @@ export const copy = async ([path_to_file, path_to_new_directory]) => {
   const readStream = createReadStream(path_to_file);
   const writeStream = createWriteStream(pathToNewFile, { flags: "wx" });
 
-  await pipeline(readStream, writeStream);
+  await pipeline(readStream, writeStream).catch(() =>
+    console.log("Operation failed")
+  );
 };

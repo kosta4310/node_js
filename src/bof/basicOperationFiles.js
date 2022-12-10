@@ -9,12 +9,16 @@ import { remove } from "../fs/delete.js";
 
 export async function bof(splittenLine) {
   const [command, ...path] = splittenLine;
+  if (!path.length) {
+    console.log("Invalid input");
+    return;
+  }
   const [firstArgument, secondArgument] = path;
   const pathToFile = resolve(cwd(), firstArgument);
 
   switch (command) {
     case "cat":
-      if (!path || path.length > 1) {
+      if (path.length > 1) {
         console.log("Invalid input");
       } else {
         await read(pathToFile);
@@ -22,7 +26,7 @@ export async function bof(splittenLine) {
       break;
 
     case "add":
-      if (!path || path.length > 1) {
+      if (path.length > 1) {
         console.log("Invalid input");
       } else {
         await create(pathToFile);
@@ -30,7 +34,7 @@ export async function bof(splittenLine) {
       break;
 
     case "rn":
-      if (path && path.length === 2) {
+      if (path.length === 2) {
         await rename({ pathToFile, secondArgument });
       } else {
         console.log("Invalid input");
@@ -38,17 +42,18 @@ export async function bof(splittenLine) {
       break;
 
     case "cp":
-      if (path && path.length === 2) {
-        await copy([pathToFile, secondArgument]).catch(() =>
-          console.log("Operation failed")
-        );
+      if (path.length === 2) {
+        await copy([pathToFile, secondArgument]);
+        // .catch(() =>
+        //   console.log("Operation failed")
+        // );
       } else {
         console.log("Invalid input");
       }
       break;
 
     case "mv":
-      if (path && path.length === 2) {
+      if (path.length === 2) {
         await move([pathToFile, secondArgument]);
       } else {
         console.log("Invalid input");
@@ -56,7 +61,7 @@ export async function bof(splittenLine) {
       break;
 
     case "rm":
-      if (!path || path.length > 1) {
+      if (path.length > 1) {
         console.log("Invalid input");
       } else {
         await remove(pathToFile);

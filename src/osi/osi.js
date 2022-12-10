@@ -2,12 +2,15 @@ import { EOL, homedir, userInfo, arch } from "node:os";
 import { processorInfo } from "./cpus.js";
 
 export function osi(splittenLine) {
-  const [command, ...path] = splittenLine;
-  const [argument] = path;
-  if (!path || path.length > 1) {
+  const [_, ...path] = splittenLine;
+
+  if (!path.length || path.length > 1) {
     console.log("Invalid input");
     return;
   }
+
+  const [argument] = path;
+
   switch (argument) {
     case "--EOL":
       console.log({ EOL });

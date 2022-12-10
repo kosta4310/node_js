@@ -7,6 +7,7 @@ const rl = readline.createInterface({ input, output });
 
 export function handleLine(name) {
   rl.on("line", async (data) => {
+    data = data.trim();
     if (data === ".exit") {
       rl.emit("SIGINT");
     } else {
