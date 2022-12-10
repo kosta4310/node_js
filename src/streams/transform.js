@@ -4,7 +4,7 @@ import { stdin, stdout } from "node:process";
 
 const transform = async () => {
   const transformStream = new Transform({
-    transform(chunk, callback) {
+    transform(chunk, _, callback) {
       callback(null, String(chunk).trim().split("").reverse().join("") + EOL);
     },
   });

@@ -10,7 +10,7 @@ const performCalculations = async () => {
   const numberCores = cpus().length;
   const arrPromises = [];
 
-  for (let i = 1; i <= numberCores; i++) {
+  for (let i = 0; i < numberCores; i++) {
     const threadPromise = new Promise((resolve, reject) => {
       const worker = new Worker(workerPath, { workerData: 10 + i });
 
