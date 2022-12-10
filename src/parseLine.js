@@ -2,6 +2,7 @@ import { nwd } from "./nwd/nwd.js";
 import { bof } from "./bof/basicOperationFiles.js";
 import { osi } from "./osi/osi.js";
 import { calcHash } from "./hash/calcHash.js";
+import { cdo } from "./cdo/cdo.js";
 
 export async function parseLine(data) {
   const splittenLine = data.split(" ");
@@ -10,6 +11,8 @@ export async function parseLine(data) {
     await nwd(splittenLine);
   } else if ("cat add rn cp mv rm".split(" ").includes(command)) {
     await bof(splittenLine);
+  } else if ("compress decompress".split(" ").includes(command)) {
+    await cdo(splittenLine);
   } else {
     switch (command) {
       case "os":
@@ -18,10 +21,6 @@ export async function parseLine(data) {
 
       case "hash":
         await calcHash(splittenLine);
-        // .catch(
-        //   (err) => console.log(err)
-        //   // console.log("Operation failed")
-        // );
         break;
 
       default:

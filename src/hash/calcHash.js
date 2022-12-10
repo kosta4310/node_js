@@ -18,7 +18,7 @@ const calculateHash = async (pathToFile) => {
   const input = createReadStream(pathToFile);
   await pipeline(input, hash.setEncoding("hex"), out);
 };
-// cd d:/download
+
 export async function calcHash(splittenLine) {
   const [_, ...path] = splittenLine;
   const [path_to_file] = path;
