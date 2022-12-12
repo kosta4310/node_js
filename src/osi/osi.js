@@ -4,7 +4,7 @@ import { processorInfo } from "./cpus.js";
 export function osi(splittenLine) {
   const [_, ...path] = splittenLine;
 
-  if (!path.length || path.length > 1) {
+  if (path.length !== 1) {
     console.log("Invalid input");
     return;
   }

@@ -44,9 +44,6 @@ export async function bof(splittenLine) {
     case "cp":
       if (path.length === 2) {
         await copy([pathToFile, secondArgument]);
-        // .catch(() =>
-        //   console.log("Operation failed")
-        // );
       } else {
         console.log("Invalid input");
       }

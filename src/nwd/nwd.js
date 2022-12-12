@@ -14,7 +14,7 @@ export async function nwd(splittenLine) {
       break;
 
     case "cd":
-      if (!path.length || path.length > 1) {
+      if (path.length !== 1) {
         console.log("Invalid input");
       } else {
         try {

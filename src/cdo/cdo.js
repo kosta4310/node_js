@@ -5,7 +5,7 @@ import { decompress } from "../zip/decompress.js";
 
 export async function cdo(splittenLine) {
   const [command, ...path] = splittenLine;
-  if (!path.length || path.length !== 2) {
+  if (path.length !== 2) {
     console.log("Invalid input");
     return;
   }
