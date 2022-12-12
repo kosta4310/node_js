@@ -5,12 +5,11 @@ import { createReadStream, createWriteStream } from "node:fs";
 
 export const compress = async (pathToFile, pathToDestination) => {
   const initialNameFile = path.basename(pathToFile);
-  const newNameFile = initialNameFile.replace(
-    path.extname(initialNameFile),
-    ".br"
-  );
 
-  const pathToFileOut = path.resolve(pathToDestination, newNameFile);
+  const pathToFileOut = path.resolve(
+    pathToDestination,
+    `${initialNameFile}.br`
+  );
 
   const rs = createReadStream(pathToFile);
   const ws = createWriteStream(pathToFileOut, { flags: "wx" });

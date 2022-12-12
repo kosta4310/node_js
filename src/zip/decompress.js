@@ -1,23 +1,19 @@
-import { Transform, pipeline } from "node:stream";
-import { createUnzip } from "node:zlib";
-import { EOL } from "node:os";
+import { pipeline } from "node:stream/promises";
+import { createBrotliDecompress } from "node:zlib";
 import path from "path";
-import { stdin, stdout } from "node:process";
-import { getDirname } from "../additional/funcDirname.js";
 import { createReadStream, createWriteStream } from "node:fs";
 
-const __dirname = getDirname(import.meta.url);
-
 export const decompress = async (pathToFile, pathToDestination) => {
-  const filePathOut = path.resolve(__dirname, "files/fileToCompress.txt");
-  const filePathIn = path.resolve(__dirname, "files/archive.gz");
-  const rs = createReadStream(filePathIn);
-  const ws = createWriteStream(filePathOut);
-  const transformStream = createUnzip();
+  const initialNameFile = path.basename(pathToFile);
+  const newNameFile = initialNameFile.replace(".br", "");
 
-  pipeline(rs, transformStream, ws, (err) => {
-    if (err) {
-      console.log(err);
-    }
-  });
+  const pathToFileOut = path.resolve(pathToDestination, newNameFile);
+
+  const rs = createReadStream(pathToFile);
+  const ws = createWriteStream(pathToFileOut, { flags: "wx" });
+  const transformStream = createBrotliDecompress();
+
+  await pipeline(rs, transformStream, ws).catch(() =>
+    console.log("Operation failed")
+  );
 };
