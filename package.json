@@ -6,12 +6,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:dev": "npx nodemon",
-    "start:prod": "tsc && node dist/index.js"
+    "start:prod": "npx tsc && node dist/index.js",
+    "lint": "npx eslint ./src",
+    "format:": "npx eslint ./src --fix "
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^18.11.15",
+    "@typescript-eslint/eslint-plugin": "^5.46.1",
+    "@typescript-eslint/parser": "^5.46.1",
+    "eslint": "^8.29.0",
     "nodemon": "^2.0.20",
     "prettier": "^2.8.1",
     "ts-node": "^10.9.1",
