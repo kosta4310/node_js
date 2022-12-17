@@ -1,7 +1,7 @@
 import http from 'node:http';
 import url from 'node:url';
 import fs from 'node:fs';
-import { getDirname } from './utils/getDirname.js';
+import { getDirname } from './utils/getDirname';
 
 const __dirname = getDirname(import.meta.url);
 const me = 'dfkdjf';
