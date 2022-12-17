@@ -2,16 +2,27 @@
 
 ... written by TypeScript with Node.js.
 
-Task is [here](https://github.com/AlreadyBored/nodejs-assignments/blob/main/assignments/crud-api/assignment.md).
-
-![image](https://user-images.githubusercontent.com/29270751/174495818-df88cd45-66f7-45a5-a6e5-77b90ea822ab.png)
+Task [https://github.com/AlreadyBored/nodejs-assignments/blob/main/assignments/crud-api/assignment.md](https://github.com/AlreadyBored/nodejs-assignments/blob/main/assignments/crud-api/assignment.md)
 
 ## 💻 How to install
+
+Clone and install repository and then take branch crud_api
+
+```
+git clone https://github.com/kosta4310/node_js
+
+cd node_js
+
+git checkout crud_api
+
+```
 
 Clone and install packages
 
 ```
+
 npm i
+
 ```
 
 ## 🚀 How to run
@@ -19,25 +30,33 @@ npm i
 Run the application in development mode
 
 ```
+
 npm run start:dev
+
 ```
 
 Run the application in production mode
 
 ```
+
 npm run start:prod
+
 ```
 
 Run tests scenarios for API
 
 ```
+
 npm test
+
 ```
 
 Run cluster mode with default load balancer and one in-memory-database for all workers
 
 ```
+
 npm run start:multi
+
 ```
 
 In console you can watch which worker response on the request. Workers should round-robin and data from database should be consistent for all workers.
@@ -69,3 +88,7 @@ Implemented endpoint: `api/users`
 You can find Postman collection with all relized API requests in the root of the repository.
 
 Have fun! :)
+
+```
+
+```
