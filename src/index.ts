@@ -1,27 +1,26 @@
 import http from 'node:http';
-import url from 'node:url';
-import fs from 'node:fs';
-import { getDirname } from './utils/getDirname';
+import path from 'node:path';
+import 'dotenv/config';
 
-const __dirname = getDirname(import.meta.url);
-const me = 'dfkdjf';
+import { createReadStream } from 'node:fs';
 
-// console.log(import.meta.url);
+const reg = /^(\/api\/users)\/?$/g;
+
 console.log('hello from master');
+const PORT = process.env.PORT || 4000;
 
-const server = http
-  .createServer((req, res) => {
-    console.log(req.url);
+const server = http.createServer((req, res) => {
+  console.log(req.url);
 
-    if (req.url === '/api/users') {
-      console.log('success');
-    } else {
-      console.log('not found');
-    }
+  if (req.url?.match(reg)) {
+    const stream = createReadStream(path.resolve(__dirname, './data/model.txt'));
+    stream.pipe(res);
+    console.log('success');
+  } else {
+    console.log('not found');
+    res.end('not found');
+  }
 
-    res.end('hello from server');
-  })
-  .listen(4000, () => console.log('server is running on port 4000'));
-
-server.on('error', () => console.log('error'));
-server.on('close', () => console.log('close'));
+  // res.end('hello from server');
+});
+server.listen(PORT, () => console.log(`server is running on port ${PORT}`));
