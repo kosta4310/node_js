@@ -4,13 +4,21 @@ import fs from 'node:fs';
 import { getDirname } from './utils/getDirname.js';
 
 const __dirname = getDirname(import.meta.url);
-const me: string = 'dfkdjf';
+const me = 'dfkdjf';
 
-console.log(__dirname);
+// console.log(import.meta.url);
 console.log('hello from master');
 
 const server = http
   .createServer((req, res) => {
+    console.log(req.url);
+
+    if (req.url === '/api/users') {
+      console.log('success');
+    } else {
+      console.log('not found');
+    }
+
     res.end('hello from server');
   })
   .listen(4000, () => console.log('server is running on port 4000'));
