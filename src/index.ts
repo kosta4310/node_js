@@ -1,26 +1,48 @@
 import http from 'node:http';
+import cluster from 'node:cluster';
+import { cpus } from 'node:os';
+import process from 'node:process';
 import path from 'node:path';
 import 'dotenv/config';
+import { createWorkerServer } from './server';
 
-import { createReadStream } from 'node:fs';
+export const model = [
+  {
+    username: 'Petya',
+    age: 30,
+    hobbies: [],
+  },
+];
 
-const reg = /^(\/api\/users)\/?$/g;
+const PORT = Number(process.env.PORT) || 4000;
 
 console.log('hello from master');
-const PORT = process.env.PORT || 4000;
 
-const server = http.createServer((req, res) => {
-  console.log(req.url);
+const [argument] = process.argv.slice(2);
+if (argument && argument.slice(2) === 'cluster') {
+  const numCores = cpus().length;
 
-  if (req.url?.match(reg)) {
-    const stream = createReadStream(path.resolve(__dirname, './data/model.txt'));
-    stream.pipe(res);
-    console.log('success');
+  if (cluster.isPrimary) {
+    console.log(`Primary ${process.pid} is running`);
+    const server = http.createServer((req, res) => {
+      console.log(req.url);
+    });
+    server.listen(PORT, () => console.log('primary server is running'));
+    // Fork workers.
+    for (let i = 0; i < numCores; i++) {
+      cluster.fork({ workerPort: PORT + i + 1 });
+    }
+
+    cluster.on('exit', (worker, code, signal) => {
+      console.log(`worker ${worker.process.pid} died`);
+    });
   } else {
-    console.log('not found');
-    res.end('not found');
+    // Workers can share any TCP connection
+    // In this case it is an HTTP server
+    console.log(`worker port ${process.env.workerPort}`);
+    process.env.workerPort && createWorkerServer(Number(process.env.workerPort));
   }
-
-  // res.end('hello from server');
-});
-server.listen(PORT, () => console.log(`server is running on port ${PORT}`));
+} else {
+  console.log('not argument');
+  createWorkerServer(PORT);
+}

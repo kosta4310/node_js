@@ -1,18 +1,31 @@
-import http from "node:http";
-import url from "node:url";
-import fs from "node:fs";
-import { getDirname } from "./utils/getDirname.js";
+import http from 'node:http';
+import EventEmitter from 'node:events';
+import { Router } from './app/Router';
 
-const __dirname = getDirname(import.meta.url);
+const emitter = new EventEmitter();
 
-console.log(__dirname);
-console.log("hello from master");
+// endpoints = {
+//   'api/users': {
+//     method: (req, res) => void
+//   },
+//   'api/users:id': {
+//     method: (req, res) => void
+//   }
+// };
 
-const server = http
-  .createServer((req, res) => {
-    res.end("hello from server");
-  })
-  .listen(4000, () => console.log("server is running on port 4000"));
+export function createWorkerServer(port: number) {
+  const router = new Router();
 
-server.on("error", () => console.log("error"));
-server.on("close", () => console.log("close"));
+  router.get('/api/users', (req, res) => {
+    res.end('get request');
+  });
+
+  const server = http.createServer((req, res) => {
+    const emitted = emitter.emit(`${req.url}-${req.method}`, req, res);
+    if (!emitted) {
+      res.end('not found');
+    }
+    res.end();
+  });
+  server.listen(port);
+}
