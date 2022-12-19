@@ -1,18 +1,19 @@
 import http from 'node:http';
 
 type Handler = (
-  req: http.IncomingMessage,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  req: http.IncomingMessage & Record<string, any>,
   res: http.ServerResponse<http.IncomingMessage> & {
     req: http.IncomingMessage;
   },
 ) => void;
 
-type Ob = {
+type MethodValue = {
   [key: string]: Handler;
 };
 
 type Endpoints = {
-  [key: string]: Ob;
+  [key: string]: MethodValue;
 };
 
 export class Router {
@@ -29,7 +30,6 @@ export class Router {
     const endpoint = this.endpoints[path];
 
     endpoint[method] = handler;
-    // emitter.on(`${path}-${method}`, (req, res) => handler(req, res));
   }
 
   get(path: string, handler: Handler) {
