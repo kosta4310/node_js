@@ -1,18 +1,18 @@
 import http from 'node:http';
+import { parseBody } from './middleware/parseRequest';
 
-type Res = http.ServerResponse<http.IncomingMessage> & {
+export type Res = http.ServerResponse<http.IncomingMessage> & {
   req: http.IncomingMessage;
 };
-type Req = http.IncomingMessage;
 
-const users = 
+export type Req = http.IncomingMessage & Record<string, any>;
 
 export function createWorkerServer(port: number) {
   const server = http.createServer((req: Req, res: Res) => {
-    res.end('ales gut');
+    parseBody(req, res);
   });
 
   server.listen(port, () => {
-    console.log(`Server runnig on port ${port}`);
+    console.log(`Server running on port ${port}`);
   });
 }

@@ -23,7 +23,7 @@ if (argument && argument.slice(2) === 'cluster') {
   const numCores = cpus().length;
 
   if (cluster.isPrimary) {
-    console.log(`Primary ${process.pid} is running`);
+    console.log(`Primary ${process.pid} is running on port ${PORT}`);
     const server = http.createServer((req, res) => {
       console.log(req.url);
     });
@@ -40,7 +40,8 @@ if (argument && argument.slice(2) === 'cluster') {
     // Workers can share any TCP connection
     // In this case it is an HTTP server
     console.log(`worker port ${process.env.workerPort}`);
-    process.env.workerPort && createWorkerServer(Number(process.env.workerPort));
+    createWorkerServer(PORT);
+    // process.env.workerPort && createWorkerServer(Number(process.env.workerPort));
   }
 } else {
   console.log('not argument');
