@@ -1,7 +1,15 @@
 import http from 'node:http';
+// import EventEmitter from 'node:events';
 
+// endpoints = {
+//   '/api/users': {
+//     "GET": handler,
+//     "POST": handler
+//   }
+// }
+
+// const emitter = new EventEmitter();
 type Handler = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   req: http.IncomingMessage & Record<string, any>,
   res: http.ServerResponse<http.IncomingMessage> & {
     req: http.IncomingMessage;
@@ -15,7 +23,6 @@ type MethodValue = {
 type Endpoints = {
   [key: string]: MethodValue;
 };
-
 export class Router {
   endpoints: Endpoints;
 
@@ -23,28 +30,22 @@ export class Router {
     this.endpoints = {};
   }
 
-  request(method = 'GET', path: string, handler: Handler) {
+  _request(method = 'GET', path: string, handler: Handler) {
     if (!this.endpoints[path]) {
       this.endpoints[path] = {};
     }
     const endpoint = this.endpoints[path];
-
+    if (endpoint[method]) {
+      throw new Error('This route already exist');
+    }
     endpoint[method] = handler;
   }
 
   get(path: string, handler: Handler) {
-    this.request('GET', path, handler);
+    this._request('GET', path, handler);
   }
 
   post(path: string, handler: Handler) {
-    this.request('POST', path, handler);
-  }
-
-  put(path: string, handler: Handler) {
-    this.request('PUT', path, handler);
-  }
-
-  delete(path: string, handler: Handler) {
-    this.request('DELETE', path, handler);
+    this._request('POST', path, handler);
   }
 }
