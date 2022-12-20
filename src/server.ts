@@ -1,13 +1,18 @@
 import http from 'node:http';
-import { Router } from './app/Router';
-import { App } from './app/App';
-import { router } from './app/my_routers';
-import { parseJson } from './app/middleware/parseJson';
+
+type Res = http.ServerResponse<http.IncomingMessage> & {
+  req: http.IncomingMessage;
+};
+type Req = http.IncomingMessage;
+
+const users = 
 
 export function createWorkerServer(port: number) {
-  const app = new App();
-  app.use(parseJson);
-  app.addRoute(router);
+  const server = http.createServer((req: Req, res: Res) => {
+    res.end('ales gut');
+  });
 
-  app.listen(port, () => console.log(`server running on port ${port}`));
+  server.listen(port, () => {
+    console.log(`Server runnig on port ${port}`);
+  });
 }
