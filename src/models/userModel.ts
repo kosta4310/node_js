@@ -1,4 +1,7 @@
+import { rejects } from 'node:assert';
+import { resolveMx } from 'node:dns';
 import { v4 as uuidv4 } from 'uuid';
+import { MyError } from '../errors/MyError';
 
 type User = {
   id: string;
@@ -10,11 +13,23 @@ type User = {
 const users: Array<User> = [];
 
 export function getAllUsers() {
-  return users;
+  return new Promise((resolve, reject) => {
+    resolve(users);
+  });
 }
 
 export function createNewUser(userData: Omit<User, 'id'>) {
-  const newUser = { id: uuidv4(), ...userData };
-  users.push(newUser);
-  return newUser;
+  return new Promise((resolve, reject) => {
+    try {
+      if (userData) {
+        const newUser = { id: uuidv4(), ...userData };
+        users.push(newUser);
+        resolve(newUser);
+      } else {
+        throw new MyError('body required', 400);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
 }

@@ -1,13 +1,23 @@
 import { createNewUser, getAllUsers } from '../models/userModel';
 import { Req, Res } from '../server';
 
-export function getUsers(req: Req, res: Res) {
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(getAllUsers()));
+export async function getUsers(req: Req, res: Res) {
+  try {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    const users = await getAllUsers();
+    res.end(JSON.stringify(users));
+  } catch (error) {
+    throw error;
+  }
 }
 
-export function createUser(req: Req, res: Res) {
-  res.writeHead(200, { 'Content-Type': 'application/json' });
+export async function createUser(req: Req, res: Res) {
+  try {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    const newUser = await createNewUser(req.body);
 
-  res.end(JSON.stringify(createNewUser(req.body)));
+    res.end(JSON.stringify(newUser));
+  } catch (error) {
+    throw error;
+  }
 }
