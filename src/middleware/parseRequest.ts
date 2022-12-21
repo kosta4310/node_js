@@ -27,10 +27,17 @@ export function parseBody(req: Req, res: Res) {
     body.push(chunk);
   });
 
-  req.on('end', () => {
-    if (body.length) {
-      req.body = JSON.parse(Buffer.concat(body).toString());
+  req.on('end', async () => {
+    try {
+      if (body.length) {
+        req.body = JSON.parse(Buffer.concat(body).toString());
+      }
+      await parseRequest(req, res);
+    } catch (error) {
+      if (error) {
+        res.writeHead(httpStatusCodes.BAD_REQUEST, { 'Content-Type': 'text' });
+        res.end('Invalid input');
+      }
     }
-    parseRequest(req, res);
   });
 }
