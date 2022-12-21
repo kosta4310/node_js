@@ -1,5 +1,6 @@
 import { createUser, getUsers } from '../controllers/controller';
 import { MyError } from '../errors/MyError';
+import { httpStatusCodes } from '../httpStatusCodes';
 import { Req, Res } from '../server';
 
 async function parseRequest(req: Req, res: Res) {
@@ -9,15 +10,14 @@ async function parseRequest(req: Req, res: Res) {
     } else if (req.method === 'POST' && req.url?.match(/^(\/api\/users)\/?$/)) {
       await createUser(req, res);
     } else {
-      res.writeHead(400, { 'Content-Type': 'text' });
+      res.writeHead(httpStatusCodes.BAD_REQUEST, { 'Content-Type': 'text' });
       res.end('Not found');
     }
   } catch (error) {
     if (error instanceof MyError) {
-      res.statusCode = 404;
-      res.writeHead(error.message);
-      res.end();
-    } else res.end('oops!');
+      res.writeHead(error.statusCode, { 'Content-Type': 'text' });
+      res.end(error.message);
+    } else res.end('oops!'); /**нужно добавить статус ошибки */
   }
 }
 

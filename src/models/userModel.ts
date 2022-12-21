@@ -1,9 +1,9 @@
 import { rejects } from 'node:assert';
 import { resolveMx } from 'node:dns';
 import { v4 as uuidv4 } from 'uuid';
-import { MyError } from '../errors/MyError';
+import { Error400 } from '../errors/MyError';
 
-type User = {
+export type User = {
   id: string;
   username: string;
   age: number;
@@ -26,7 +26,7 @@ export function createNewUser(userData: Omit<User, 'id'>) {
         users.push(newUser);
         resolve(newUser);
       } else {
-        throw new MyError('body required', 400);
+        throw new Error400('body required');
       }
     } catch (error) {
       reject(error);

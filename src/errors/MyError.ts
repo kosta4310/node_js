@@ -1,7 +1,25 @@
+import { httpStatusCodes as code } from '../httpStatusCodes';
+
 export class MyError extends Error {
   statusCode: number;
-  constructor(description: string, statusCode: number) {
-    super(description);
+  constructor(message: string, statusCode: number) {
+    super(message);
+
+    // Object.setPrototypeOf(this, new.target.prototype);
+
+    // Error.captureStackTrace(this);
     this.statusCode = statusCode;
+  }
+}
+
+export class Error400 extends MyError {
+  constructor(message: string) {
+    super(message, code.BAD_REQUEST);
+  }
+}
+
+export class Error404 extends MyError {
+  constructor(message: string) {
+    super(message, code.NOT_FOUND);
   }
 }

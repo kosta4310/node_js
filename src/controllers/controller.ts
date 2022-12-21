@@ -1,9 +1,10 @@
+import { httpStatusCodes } from '../httpStatusCodes';
 import { createNewUser, getAllUsers } from '../models/userModel';
 import { Req, Res } from '../server';
 
 export async function getUsers(req: Req, res: Res) {
   try {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.writeHead(httpStatusCodes.OK, { 'Content-Type': 'application/json' });
     const users = await getAllUsers();
     res.end(JSON.stringify(users));
   } catch (error) {
@@ -13,9 +14,8 @@ export async function getUsers(req: Req, res: Res) {
 
 export async function createUser(req: Req, res: Res) {
   try {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
     const newUser = await createNewUser(req.body);
-
+    res.writeHead(httpStatusCodes.OK_POST, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(newUser));
   } catch (error) {
     throw error;
