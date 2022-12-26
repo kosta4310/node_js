@@ -19,6 +19,20 @@ export function getAllUsers() {
   });
 }
 
+export function getUserById(id: string) {
+  return new Promise((resolve, reject) => {
+    const user = users.find((user) => user.id === id);
+    console.log(`id: ${id}`);
+
+    // переписать на trycatch
+    // if (user) {
+    resolve(user);
+    // } else {
+    //   reject('user not found');
+    // }
+  });
+}
+
 export function createNewUser(userData: Omit<User, 'id'>) {
   return new Promise((resolve, reject) => {
     try {
@@ -27,7 +41,7 @@ export function createNewUser(userData: Omit<User, 'id'>) {
         users.push(newUser);
         resolve(newUser);
       } else {
-        throw new Error400('body does not contain required fields');
+        throw new Error400('Body does not contain required fields');
       }
     } catch (error) {
       reject(error);
