@@ -1,7 +1,5 @@
-import { rejects } from 'node:assert';
-import { resolveMx } from 'node:dns';
 import { v4 as uuidv4 } from 'uuid';
-import { Error400 } from '../errors/MyError';
+import { Error400, Error404 } from '../errors/MyError';
 import { isValidDataUser } from '../utils/checkDataUser';
 
 export type User = {
@@ -21,15 +19,16 @@ export function getAllUsers() {
 
 export function getUserById(id: string) {
   return new Promise((resolve, reject) => {
-    const user = users.find((user) => user.id === id);
-    console.log(`id: ${id}`);
-
-    // переписать на trycatch
-    // if (user) {
-    resolve(user);
-    // } else {
-    //   reject('user not found');
-    // }
+    try {
+      const user = users.find((user) => user.id === id);
+      if (user) {
+        resolve(user);
+      } else {
+        throw new Error404(`User with id = ${id} doesn't exist`);
+      }
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
