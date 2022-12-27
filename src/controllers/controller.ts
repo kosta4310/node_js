@@ -38,3 +38,13 @@ export async function createUser(req: Req, res: Res) {
     throw error;
   }
 }
+
+// export async function changeUser(req: Req, res: Res) {
+//   try {
+//     const newUser = await createNewUser(req.body);
+//     res.writeHead(httpStatusCodes.OK_POST, { 'Content-Type': 'application/json' });
+//     res.end(JSON.stringify(newUser));
+//   } catch (error) {
+//     throw error;
+//   }
+// }

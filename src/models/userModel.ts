@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Error400, Error404 } from '../errors/MyError';
+import { Error400, Error404, MyError } from '../errors/MyError';
 import { isValidDataUser } from '../utils/checkDataUser';
 
 export type User = {
@@ -17,7 +17,7 @@ export function getAllUsers() {
   });
 }
 
-export function getUserById(id: string) {
+export function getUserById(id: string): Promise<User | Error | MyError> {
   return new Promise((resolve, reject) => {
     try {
       const user = users.find((user) => user.id === id);
@@ -42,6 +42,17 @@ export function createNewUser(userData: Omit<User, 'id'>) {
       } else {
         throw new Error400('Body does not contain required fields');
       }
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+export function changeUser(id: string) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await getUserById(id);
+      console.log(user);
     } catch (error) {
       reject(error);
     }
