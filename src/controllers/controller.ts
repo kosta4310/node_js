@@ -1,4 +1,3 @@
-import { Error400 } from '../errors/MyError';
 import { httpStatusCodes } from '../httpStatusCodes';
 import { changeUser, createNewUser, getAllUsers, getUserById, removeUser } from '../models/userModel';
 import { Req, Res } from '../server';
