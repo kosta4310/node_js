@@ -1,4 +1,4 @@
-import { createUser, getUser, getUsers } from '../controllers/controller';
+import { createUser, deleteUser, getUser, getUsers, putUser } from '../controllers/controller';
 import { MyError } from '../errors/MyError';
 import { httpStatusCodes } from '../httpStatusCodes';
 import { Req, Res } from '../server';
@@ -11,6 +11,10 @@ async function parseRequest(req: Req, res: Res) {
       await createUser(req, res);
     } else if (req.method === 'GET' && req.url?.match(/^(\/api\/users)\/[0-9a-z-]+\/?$/)) {
       await getUser(req, res);
+    } else if (req.method === 'PUT' && req.url?.match(/^(\/api\/users)\/[0-9a-z-]+\/?$/)) {
+      await putUser(req, res);
+    } else if (req.method === 'DELETE' && req.url?.match(/^(\/api\/users)\/[0-9a-z-]+\/?$/)) {
+      await deleteUser(req, res);
     } else {
       res.writeHead(httpStatusCodes.NOT_FOUND, { 'Content-Type': 'text' });
       res.end('The server cannot find the requested resource.');
@@ -19,7 +23,10 @@ async function parseRequest(req: Req, res: Res) {
     if (error instanceof MyError) {
       res.writeHead(error.statusCode, { 'Content-Type': 'text' });
       res.end(error.message);
-    } else res.end('oops!'); /**нужно добавить статус ошибки */
+    } else {
+      res.writeHead(httpStatusCodes.INTERNAL_SERVER_ERROR, { 'Content-Type': 'text' });
+      res.end('Something wrong. Try again later, please.');
+    }
   }
 }
 

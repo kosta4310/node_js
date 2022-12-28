@@ -52,17 +52,40 @@ export function createNewUser(userData: Omit<User, 'id'>) {
   });
 }
 
-export function changeUser(user: User) {
+export function changeUser(id: string, user: Omit<User, 'id'>) {
   return new Promise(async (resolve, reject) => {
     try {
-      const currentUser = await getUserById(user.id);
-      const username = user.username;
-      const age = user.age;
-      const hobbies = user.hobbies;
-      const userData = { username: user.username, age: user.age, hobbies: user.hobbies };
-      if (userData && isValidDataUser()) {
+      let currentUser = await getUserById(id);
+
+      if (user && isValidDataUser(user)) {
+        currentUser = Object.assign(currentUser, { ...user });
+        resolve(currentUser);
       } else {
         throw new Error400('Body does not contain required fields');
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+export function removeUser(id: string): Promise<Error | MyError | void> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (isValidUuid(id)) {
+        let deletedUser = [];
+        users.forEach((user, idx) => {
+          if (user.id === id) {
+            deletedUser = users.splice(idx, 1);
+          }
+        });
+        if (deletedUser.length) {
+          resolve();
+        } else {
+          throw new Error404(`User with id = ${id} doesn't exist`);
+        }
+      } else {
+        throw new Error400('UserId is invalid');
       }
     } catch (error) {
       reject(error);
