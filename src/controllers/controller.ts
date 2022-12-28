@@ -15,15 +15,15 @@ export async function getUsers(req: Req, res: Res) {
 
 export async function getUser(req: Req, res: Res) {
   try {
-    const id = req.url?.split('/api/users/')[1];
-    const reg = /^[a-z0-9]{8}-([a-z0-9]{4}-){3}[a-z0-9]{12}$/;
-    if (id?.match(reg)) {
-      const user = await getUserById(id);
-      res.writeHead(httpStatusCodes.OK, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(user));
-    } else {
-      throw new Error400('UserId is invalid');
-    }
+    const id = req.url?.split('/api/users/')[1] as string;
+
+    // if (id && isValidUuid(id)) {
+    const user = await getUserById(id);
+    res.writeHead(httpStatusCodes.OK, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(user));
+    // } else {
+    //   throw new Error400('UserId is invalid');
+    // }
   } catch (error) {
     throw error;
   }

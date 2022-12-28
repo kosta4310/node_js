@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Error400, Error404, MyError } from '../errors/MyError';
-import { isValidDataUser } from '../utils/checkDataUser';
+import { isValidDataUser, isValidUuid } from '../utils/checkDataUser';
 
 export type User = {
   id: string;
@@ -20,11 +20,15 @@ export function getAllUsers() {
 export function getUserById(id: string): Promise<User | Error | MyError> {
   return new Promise((resolve, reject) => {
     try {
-      const user = users.find((user) => user.id === id);
-      if (user) {
-        resolve(user);
+      if (isValidUuid(id)) {
+        const user = users.find((user) => user.id === id);
+        if (user) {
+          resolve(user);
+        } else {
+          throw new Error404(`User with id = ${id} doesn't exist`);
+        }
       } else {
-        throw new Error404(`User with id = ${id} doesn't exist`);
+        throw new Error400('UserId is invalid');
       }
     } catch (error) {
       reject(error);
@@ -48,11 +52,18 @@ export function createNewUser(userData: Omit<User, 'id'>) {
   });
 }
 
-export function changeUser(id: string) {
+export function changeUser(user: User) {
   return new Promise(async (resolve, reject) => {
     try {
-      const user = await getUserById(id);
-      console.log(user);
+      const currentUser = await getUserById(user.id);
+      const username = user.username;
+      const age = user.age;
+      const hobbies = user.hobbies;
+      const userData = { username: user.username, age: user.age, hobbies: user.hobbies };
+      if (userData && isValidDataUser()) {
+      } else {
+        throw new Error400('Body does not contain required fields');
+      }
     } catch (error) {
       reject(error);
     }
