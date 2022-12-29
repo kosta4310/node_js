@@ -5,6 +5,7 @@ export type Res = http.ServerResponse<http.IncomingMessage> & {
   req: http.IncomingMessage;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Req = http.IncomingMessage & Record<string, any>;
 
 export function createWorkerServer(port: number) {

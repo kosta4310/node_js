@@ -5,13 +5,10 @@ import process from 'node:process';
 import path from 'node:path';
 import 'dotenv/config';
 import { createWorkerServer } from './server';
+import { User } from './models/userModel';
 
-export const model = [
-  {
-    username: 'Petya',
-    age: 30,
-    hobbies: [],
-  },
+export const model: Array<User> = [
+  { id: 'f45ec886-6837-483b-abba-9a8dd0a53aa5', username: 'Petya', age: 30, hobbies: [] },
 ];
 
 const PORT = Number(process.env.PORT) || 4000;

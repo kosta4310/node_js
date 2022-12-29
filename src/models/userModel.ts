@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Error400, Error404, MyError } from '../errors/MyError';
 import { isValidDataUser, isValidUuid } from '../utils/checkDataUser';
+import { model as users } from '../index';
 
 export type User = {
   id: string;
@@ -9,7 +10,7 @@ export type User = {
   hobbies: Array<string>;
 };
 
-const users: Array<User> = [];
+// const users: Array<User> = [];
 
 export function getAllUsers() {
   return new Promise((resolve) => {
