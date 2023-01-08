@@ -1,8 +1,8 @@
-import http from 'node:http';
+import { createDb } from './userDb/db';
 import cluster from 'node:cluster';
-import { cpus } from 'node:os';
+import os from 'node:os';
 import process from 'node:process';
-import path from 'node:path';
+import net from 'node:net';
 import 'dotenv/config';
 import { createWorkerServer } from './server';
 import { User } from './models/userModel';
@@ -13,34 +13,67 @@ export const model: Array<User> = [
 
 const PORT = Number(process.env.PORT) || 4000;
 
-console.log('hello from master');
+console.log(`hello from master port ${PORT}`);
 
 const [argument] = process.argv.slice(2);
 if (argument && argument.slice(2) === 'cluster') {
-  const numCores = cpus().length;
+  const numCores = os.cpus().length;
 
   if (cluster.isPrimary) {
-    console.log(`Primary ${process.pid} is running on port ${PORT}`);
-    const server = http.createServer((req, res) => {
-      console.log(req.url);
-    });
-    server.listen(PORT, () => console.log('primary server is running'));
-    // Fork workers.
+    createDb();
+    console.log(`Master pid: ${process.pid} port ${PORT}`);
+    // console.log(`Starting ${cpus} forks`);
+
+    const ports: Array<number> = [];
+
+    let count = 0;
+
     for (let i = 0; i < numCores; i++) {
       cluster.fork({ workerPort: PORT + i + 1 });
+      ports.push(PORT + i + 1);
     }
 
-    cluster.on('exit', (worker, code, signal) => {
-      console.log(`worker ${worker.process.pid} died`);
-    });
+    const balancer = (socket: net.Socket) => {
+      socket.on('data', (msg) => {
+        const id = count % numCores;
+        const port = ports[id];
+        const serviceSocket = new net.Socket();
+
+        serviceSocket.connect(port, '127.0.0.1', () => {
+          serviceSocket.write(msg);
+        });
+
+        serviceSocket.on('data', (data) => {
+          socket.write(data);
+          console.log('end');
+        });
+
+        serviceSocket.on('close', (err) => {
+          console.log(`close proxy ${serviceSocket.destroyed}`);
+          socket.destroy();
+          if (err) {
+            console.log(`server error 500`);
+          }
+        });
+
+        count++;
+      });
+      socket.on('close', (err) => {
+        console.log(`close client ${socket.destroyed}`);
+        if (err) {
+          console.log(`server error 500`);
+        }
+      });
+    };
+
+    const server = net.createServer(balancer);
+    server.listen(PORT);
   } else {
-    // Workers can share any TCP connection
-    // In this case it is an HTTP server
     console.log(`worker port ${process.env.workerPort}`);
-    createWorkerServer(PORT);
-    // process.env.workerPort && createWorkerServer(Number(process.env.workerPort));
+    createWorkerServer(undefined);
   }
 } else {
+  createDb();
   console.log('not argument');
   createWorkerServer(PORT);
 }
