@@ -26,6 +26,9 @@ describe('name', () => {
   // });
   test('adds 1 + 2 to equal 3', async () => {
     // http.request({ host: '127.0.0.1', port: 4000 }, (res) => console.log(res.statusCode));
-    await request(testServer()).get('/api/users').expect('Content-Type', /json/).expect(200);
+    await request(await createWorkerServer())
+      .get('/api/userss')
+      .expect('Content-Type', /json/)
+      .expect(600);
   });
 });
