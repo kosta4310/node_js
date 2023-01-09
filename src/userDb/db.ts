@@ -1,14 +1,13 @@
 import net from 'node:net';
 import { User } from '../models/userModel';
 
-const PORT = 8000;
-console.log('Db is running');
-
-let clientDB: Array<User> = [];
-const workersSockets: Array<net.Socket> = [];
-
-export function createDb() {
+export function createDb(): Promise<net.Server> {
   return new Promise((resolve, reject) => {
+    const PORT = 8000;
+    console.log('Db is running');
+
+    let clientDB: Array<User> = [];
+    const workersSockets: Array<net.Socket> = [];
     const server = net.createServer((socket) => {
       socket.on('data', (msg) => {
         const m = JSON.parse(msg.toString());
@@ -19,9 +18,10 @@ export function createDb() {
       });
     });
     server.on('connection', (socket) => workersSockets.push(socket));
-    server.listen(PORT, () => {
-      console.log(`db is started on port ${PORT}`);
-      resolve('db is started');
-    });
+    resolve(server);
+    // server.listen(PORT, () => {
+    //   console.log(`db is started on port ${PORT}`);
+    //   resolve(server);
+    // });
   });
 }
