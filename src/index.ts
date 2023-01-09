@@ -75,14 +75,15 @@ async function startApp() {
       const port = Number(process.env.workerPort);
       const server = await createWorkerServer();
       server.listen(port, () => console.log(`worker port ${process.env.workerPort}`));
-      // dbsocket.connect(DB_PORT, '127.0.0.1', () => {
-      //   console.log(`connect to db pid ${process.pid}`);
-      // });
+      dbsocket.connect(DB_PORT, '127.0.0.1', () => {
+        console.log(`connect to db pid ${process.pid}`);
+      });
     }
   } else {
-    const db_server = await createDb();
-    db_server.listen(DB_PORT, () => console.log(`db is started on port ${DB_PORT}`));
-    console.log(`dbport: ${process.env.DB_PORT}`);
+    process.env.modeClusterForWorkers = 'true';
+    // const db_server = await createDb();
+    // db_server.listen(DB_PORT, () => console.log(`db is started on port ${DB_PORT}`));
+    // console.log(`dbport: ${process.env.DB_PORT}`);
     const appServer = await createWorkerServer();
     appServer.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   }

@@ -7,9 +7,9 @@ import { isValidDataUser, isValidUuid } from '../utils/checkDataUser';
 let users: Array<User> = [];
 
 export const dbsocket = new net.Socket();
-dbsocket.connect(8000, '127.0.0.1', () => {
-  console.log(`connect to db pid ${process.pid}`);
-});
+// dbsocket.connect(8000, '127.0.0.1', () => {
+//   console.log(`connect to db pid ${process.pid}`);
+// });
 
 dbsocket.on('data', (dbAll) => {
   users = JSON.parse(dbAll.toString());
@@ -55,9 +55,10 @@ export function createNewUser(userData: Omit<User, 'id'>) {
       if (userData && isValidDataUser(userData)) {
         const newUser = { id: uuidv4(), ...userData };
         users.push(newUser);
+
         // console.log(dbsocket.connecting);
 
-        dbsocket.connecting && dbsocket.write(JSON.stringify(users));
+        !process.env.modeClusterForWorkers && dbsocket.write(JSON.stringify(users));
         resolve(newUser);
       } else {
         throw new Error400('Body does not contain required fields');
@@ -75,7 +76,7 @@ export function changeUser(id: string, user: Omit<User, 'id'>) {
 
       if (user && isValidDataUser(user)) {
         currentUser = Object.assign(currentUser, { ...user });
-        dbsocket.connecting && dbsocket.write(JSON.stringify(users));
+        !process.env.modeClusterForWorkers && dbsocket.write(JSON.stringify(users));
         resolve(currentUser);
       } else {
         throw new Error400('Body does not contain required fields');
@@ -97,7 +98,7 @@ export function removeUser(id: string): Promise<Error | MyError | void> {
           }
         });
         if (deletedUser.length) {
-          dbsocket.connecting && dbsocket.write(JSON.stringify(users));
+          !process.env.modeClusterForWorkers && dbsocket.write(JSON.stringify(users));
           resolve();
         } else {
           throw new Error404(`User with id = ${id} doesn't exist`);
