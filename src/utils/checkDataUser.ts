@@ -17,8 +17,3 @@ export function isValidDataUser({ username, age, hobbies }: Omit<User, 'id'>) {
     return checkArrayForString(hobbies);
   } else return false;
 }
-
-export function isValidUuid(id: string) {
-  const reg = /^[a-z0-9]{8}-([a-z0-9]{4}-){3}[a-z0-9]{12}$/;
-  return id.match(reg);
-}

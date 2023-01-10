@@ -72,6 +72,7 @@ async function startApp() {
       const server = net.createServer(balancer);
       server.listen(PORT);
     } else {
+      process.env.modeClusterForWorkers = 'true';
       const port = Number(process.env.workerPort);
       const server = await createWorkerServer();
       server.listen(port, () => console.log(`worker port ${process.env.workerPort}`));
@@ -80,7 +81,6 @@ async function startApp() {
       });
     }
   } else {
-    process.env.modeClusterForWorkers = 'true';
     // const db_server = await createDb();
     // db_server.listen(DB_PORT, () => console.log(`db is started on port ${DB_PORT}`));
     // console.log(`dbport: ${process.env.DB_PORT}`);
