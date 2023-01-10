@@ -25,8 +25,12 @@ export type User = {
 // const users: Array<User> = [];
 
 export function getAllUsers() {
-  return new Promise((resolve) => {
-    resolve(users);
+  return new Promise((resolve, reject) => {
+    try {
+      resolve(users);
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
