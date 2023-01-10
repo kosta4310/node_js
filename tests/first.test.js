@@ -2,7 +2,6 @@ import request from 'supertest';
 import assert from 'assert';
 import net from 'node:net';
 import http from 'node:http';
-import { testServer } from '../src/testServer';
 
 import { createWorkerServer } from '../src/server';
 import { createDb } from '../src/userDb/db';
@@ -10,7 +9,7 @@ import exp from 'constants';
 
 // async function run() {
 
-describe('name', () => {
+describe('Getting, creating, updating and deleting user and checking consistency of its data', () => {
   // createDb().then((db) =>
   //   createWorkerServer(4000).then((app) => {
   //     afterAll(() => {
@@ -24,11 +23,16 @@ describe('name', () => {
   //   (app as http.Server).close();
   //   (db as net.Server).close();
   // });
-  test('adds 1 + 2 to equal 3', async () => {
-    // http.request({ host: '127.0.0.1', port: 4000 }, (res) => console.log(res.statusCode));
+  it('should return empty array', async () => {
     await request(await createWorkerServer())
-      .get('/api/userss')
+      .get('/api/users')
       .expect('Content-Type', /json/)
-      .expect(600);
+      .expect(200)
+      .expect(function (err, res) {
+        if (err) {
+          throw err;
+        }
+        console.log(res);
+      });
   });
 });
