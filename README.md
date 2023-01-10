@@ -90,5 +90,6 @@ You can find Postman collection with all relized API requests in the root of the
 Have fun! :)
 
 ```
-
+Для проверяющих
+слещ в конце урла поначалу обрабатывал, но потом переписал код и сделал это ошибкой, так как Максим в видеоразборе так сказал делать
 ```
