@@ -52,6 +52,10 @@ export function getUserById(id: string): Promise<User | Error | MyError> {
 export function createNewUser(userData: Omit<User, 'id'>) {
   return new Promise((resolve, reject) => {
     try {
+      if (Object.keys(userData).length > 3) {
+        throw new Error400('Body contain more fields');
+      }
+
       if (userData && isValidDataUser(userData)) {
         const newUser = { id: uuidv4(), ...userData };
         users.push(newUser);
