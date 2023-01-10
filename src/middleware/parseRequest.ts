@@ -5,15 +5,15 @@ import { Req, Res } from '../server';
 
 async function parseRequest(req: Req, res: Res) {
   try {
-    if (req.method === 'GET' && req.url?.match(/^(\/api\/users)\/?$/)) {
+    if (req.method === 'GET' && req.url?.match(/^(\/api\/users)$/)) {
       await getUsers(req, res);
-    } else if (req.method === 'POST' && req.url?.match(/^(\/api\/users)\/?$/)) {
+    } else if (req.method === 'POST' && req.url?.match(/^(\/api\/users)$/)) {
       await createUser(req, res);
-    } else if (req.method === 'GET' && req.url?.match(/^(\/api\/users)\/[0-9a-z-]+\/?$/)) {
+    } else if (req.method === 'GET' && req.url?.match(/^(\/api\/users)\/[0-9a-z-]+$/)) {
       await getUser(req, res);
-    } else if (req.method === 'PUT' && req.url?.match(/^(\/api\/users)\/[0-9a-z-]+\/?$/)) {
+    } else if (req.method === 'PUT' && req.url?.match(/^(\/api\/users)\/[0-9a-z-]+$/)) {
       await putUser(req, res);
-    } else if (req.method === 'DELETE' && req.url?.match(/^(\/api\/users)\/[0-9a-z-]+\/?$/)) {
+    } else if (req.method === 'DELETE' && req.url?.match(/^(\/api\/users)\/[0-9a-z-]+$/)) {
       await deleteUser(req, res);
     } else {
       res.writeHead(httpStatusCodes.NOT_FOUND, { 'Content-Type': 'text' });
