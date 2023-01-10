@@ -1,16 +1,11 @@
 import request from 'supertest';
-import assert from 'assert';
-import net from 'node:net';
-import http from 'node:http';
-
 import { createWorkerServer } from '../src/server';
-import { createDb } from '../src/userDb/db';
-import exp from 'constants';
+import { User } from '../src/models/userModel';
 
-let temp_user;
-let reques;
-const user = { username: 'Petya', age: 25, hobbies: [] };
-const user_update = { username: 'Vasya', age: 35, hobbies: ['tennis'] };
+let user_temp: User;
+let reques: request.SuperTest<request.Test>;
+const user: Omit<User, 'id'> = { username: 'Petya', age: 25, hobbies: [] };
+const user_update: Omit<User, 'id'> = { username: 'Vasya', age: 35, hobbies: ['tennis'] };
 
 describe('Getting, creating, updating and deleting user and checking consistency of its data', () => {
   it('should return empty array', async () => {
@@ -20,12 +15,12 @@ describe('Getting, creating, updating and deleting user and checking consistency
   });
 
   it('should return newly created record', async () => {
-    const reques = request(await createWorkerServer());
+    reques = request(await createWorkerServer());
 
     const response = await reques.post('/api/users').send(user).expect('Content-Type', /json/).expect(201);
 
     const { username, age, hobbies } = response.body;
-    temp_user = response.body;
+    user_temp = response.body;
 
     expect(username).toMatch(user.username);
     expect(age).toBe(user.age);
@@ -33,23 +28,18 @@ describe('Getting, creating, updating and deleting user and checking consistency
   });
 
   it('should return created record by ID', async () => {
-    const reques = request(await createWorkerServer());
-    const response = await reques.post('/api/users').send(user).expect('Content-Type', /json/).expect(201);
-
-    const res = await reques.get(`/api/users/${response.body.id}`).expect('Content-Type', /json/).expect(200);
+    const res = await reques.get(`/api/users/${user_temp.id}`).expect('Content-Type', /json/).expect(200);
 
     const { username, age, hobbies } = res.body;
 
-    expect(username).toMatch(user.username);
-    expect(age).toBe(user.age);
-    expect(hobbies.length).toBe(user.hobbies.length);
+    expect(username).toMatch(user_temp.username);
+    expect(age).toBe(user_temp.age);
+    expect(hobbies.length).toBe(user_temp.hobbies.length);
   });
 
   it('should update user and return an updated object with the same ID ', async () => {
-    const reques = request(await createWorkerServer());
-    const response = await reques.post('/api/users').send(user).expect('Content-Type', /json/).expect(201);
     const response_after_update = await reques
-      .put(`/api/users/${response.body.id}`)
+      .put(`/api/users/${user_temp.id}`)
       .send(user_update)
       .expect('Content-Type', /json/)
       .expect(200);
@@ -58,7 +48,16 @@ describe('Getting, creating, updating and deleting user and checking consistency
 
     expect(username).toMatch(user_update.username);
     expect(age).toBe(user_update.age);
-    expect(response.body.id).toBe(id);
+    expect(user_temp.id).toBe(id);
     expect(hobbies.length).toBe(user_update.hobbies.length);
+    user_temp = response_after_update.body;
+  });
+
+  it('should return confirmation of successful deletion', async () => {
+    await reques.delete(`/api/users/${user_temp.id}`).expect('Content-Type', /json/).expect(204);
+  });
+
+  it('should return answer that there is no such object)', async () => {
+    await reques.get(`/api/users/${user_temp.id}`).expect('Content-Type', /text/).expect(404);
   });
 });
