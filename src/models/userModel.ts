@@ -2,14 +2,10 @@ import { v4 as uuidv4, validate } from 'uuid';
 import net from 'node:net';
 import { Error400, Error404, MyError } from '../errors/MyError';
 import { isValidDataUser } from '../utils/checkDataUser';
-// import { model as users } from '../index';
 
 let users: Array<User> = [];
 
 export const dbsocket = new net.Socket();
-// dbsocket.connect(8000, '127.0.0.1', () => {
-//   console.log(`connect to db pid ${process.pid}`);
-// });
 
 dbsocket.on('data', (dbAll) => {
   users = JSON.parse(dbAll.toString());
@@ -21,8 +17,6 @@ export type User = {
   age: number;
   hobbies: Array<string>;
 };
-
-// const users: Array<User> = [];
 
 export function getAllUsers() {
   return new Promise((resolve, reject) => {
@@ -39,6 +33,7 @@ export function getUserById(id: string): Promise<User | Error | MyError> {
     try {
       if (validate(id)) {
         const user = users.find((user) => user.id === id);
+
         if (user) {
           resolve(user);
         } else {
@@ -63,8 +58,6 @@ export function createNewUser(userData: Omit<User, 'id'>) {
       if (userData && isValidDataUser(userData)) {
         const newUser = { id: uuidv4(), ...userData };
         users.push(newUser);
-
-        // console.log(dbsocket.connecting);
 
         process.env.modeClusterForWorkers && dbsocket.write(JSON.stringify(users));
         resolve(newUser);

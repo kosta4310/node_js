@@ -7,7 +7,7 @@ let reques: request.SuperTest<request.Test>;
 const user: Omit<User, 'id'> = { username: 'Petya', age: 25, hobbies: [] };
 const user_update: Omit<User, 'id'> = { username: 'Vasya', age: 35, hobbies: ['tennis'] };
 
-describe('Getting, creating, updating and deleting user and checking consistency of its data', () => {
+describe('Getting, creating, updating and deleting user with a correct data and checking the returning value', () => {
   it('should return empty array', async () => {
     const reques = request(await createWorkerServer());
     const response = await reques.get('/api/users').expect('Content-Type', /json/).expect(200);
@@ -59,5 +59,37 @@ describe('Getting, creating, updating and deleting user and checking consistency
 
   it('should return answer that there is no such object)', async () => {
     await reques.get(`/api/users/${user_temp.id}`).expect('Content-Type', /text/).expect(404);
+  });
+});
+
+describe('Validation of user object data', () => {
+  it('The username must be a string, otherwise a 400 error will be thrown.', async () => {
+    const incorect_name = Object.assign(JSON.parse(JSON.stringify(user)), { username: 5 });
+    await reques.post('/api/users').send(incorect_name).expect('Content-Type', /text/).expect(400);
+  });
+
+  it('The age must be a number, otherwise a 400 error will be thrown.', async () => {
+    const incorect_name = Object.assign(JSON.parse(JSON.stringify(user)), { age: '5' });
+    await reques.post('/api/users').send(incorect_name).expect('Content-Type', /text/).expect(400);
+  });
+
+  it('The age must be a number >= 0, otherwise a 400 error will be thrown.', async () => {
+    const incorect_name = Object.assign(JSON.parse(JSON.stringify(user)), { age: -5 });
+    await reques.post('/api/users').send(incorect_name).expect('Content-Type', /text/).expect(400);
+  });
+
+  it('The hobbies must be an array otherwise a 400 error will be thrown.', async () => {
+    const incorect_name = Object.assign(JSON.parse(JSON.stringify(user)), { age: 'array' });
+    await reques.post('/api/users').send(incorect_name).expect('Content-Type', /text/).expect(400);
+  });
+
+  it('The age must be an array of string, otherwise a 400 error will be thrown.', async () => {
+    const incorect_name = Object.assign(JSON.parse(JSON.stringify(user)), { age: [4, 5] });
+    await reques.post('/api/users').send(incorect_name).expect('Content-Type', /text/).expect(400);
+  });
+
+  it('The user object should contain username, age, hobbies only, otherwise a 400 error will be thrown.', async () => {
+    const incorect_name = Object.assign(JSON.parse(JSON.stringify(user)), { something: 'something' });
+    await reques.post('/api/users').send(incorect_name).expect('Content-Type', /text/).expect(400);
   });
 });
