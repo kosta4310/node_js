@@ -1,7 +1,7 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, validate } from 'uuid';
 import net from 'node:net';
 import { Error400, Error404, MyError } from '../errors/MyError';
-import { isValidDataUser, isValidUuid } from '../utils/checkDataUser';
+import { isValidDataUser } from '../utils/checkDataUser';
 // import { model as users } from '../index';
 
 let users: Array<User> = [];
@@ -37,7 +37,7 @@ export function getAllUsers() {
 export function getUserById(id: string): Promise<User | Error | MyError> {
   return new Promise((resolve, reject) => {
     try {
-      if (isValidUuid(id)) {
+      if (validate(id)) {
         const user = users.find((user) => user.id === id);
         if (user) {
           resolve(user);
@@ -66,7 +66,7 @@ export function createNewUser(userData: Omit<User, 'id'>) {
 
         // console.log(dbsocket.connecting);
 
-        !process.env.modeClusterForWorkers && dbsocket.write(JSON.stringify(users));
+        process.env.modeClusterForWorkers && dbsocket.write(JSON.stringify(users));
         resolve(newUser);
       } else {
         throw new Error400('Body does not contain required fields');
@@ -84,7 +84,7 @@ export function changeUser(id: string, user: Omit<User, 'id'>) {
 
       if (user && isValidDataUser(user)) {
         currentUser = Object.assign(currentUser, { ...user });
-        !process.env.modeClusterForWorkers && dbsocket.write(JSON.stringify(users));
+        process.env.modeClusterForWorkers && dbsocket.write(JSON.stringify(users));
         resolve(currentUser);
       } else {
         throw new Error400('Body does not contain required fields');
@@ -98,7 +98,7 @@ export function changeUser(id: string, user: Omit<User, 'id'>) {
 export function removeUser(id: string): Promise<Error | MyError | void> {
   return new Promise(async (resolve, reject) => {
     try {
-      if (isValidUuid(id)) {
+      if (validate(id)) {
         let deletedUser = [];
         users.forEach((user, idx) => {
           if (user.id === id) {
@@ -106,7 +106,7 @@ export function removeUser(id: string): Promise<Error | MyError | void> {
           }
         });
         if (deletedUser.length) {
-          !process.env.modeClusterForWorkers && dbsocket.write(JSON.stringify(users));
+          process.env.modeClusterForWorkers && dbsocket.write(JSON.stringify(users));
           resolve();
         } else {
           throw new Error404(`User with id = ${id} doesn't exist`);

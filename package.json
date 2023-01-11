@@ -10,8 +10,7 @@
     "start:multi": "npm run start:prod -- --cluster",
     "start:multidev": "npm run start:dev -- --cluster",
     "lint": "npx eslint ./src",
-    "format:": "npx eslint ./src --fix ",
-    "sertes": "npx ts-node src/testServer.ts"
+    "format:": "npx eslint ./src --fix "
   },
   "author": "",
   "license": "ISC",
