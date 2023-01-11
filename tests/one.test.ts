@@ -63,33 +63,69 @@ describe('Getting, creating, updating and deleting user with a correct data and 
 });
 
 describe('Validation of user object data', () => {
+  function getIncorrectUser(option: { [key: string]: string | number | Array<number> }) {
+    return Object.assign(JSON.parse(JSON.stringify(user)), option);
+  }
+
   it('The username must be a string, otherwise a 400 error will be thrown.', async () => {
-    const incorect_name = Object.assign(JSON.parse(JSON.stringify(user)), { username: 5 });
-    await reques.post('/api/users').send(incorect_name).expect('Content-Type', /text/).expect(400);
+    const incorrect_name = getIncorrectUser({ username: 5 });
+    await reques.post('/api/users').send(incorrect_name).expect('Content-Type', /text/).expect(400);
   });
 
   it('The age must be a number, otherwise a 400 error will be thrown.', async () => {
-    const incorect_name = Object.assign(JSON.parse(JSON.stringify(user)), { age: '5' });
-    await reques.post('/api/users').send(incorect_name).expect('Content-Type', /text/).expect(400);
+    const incorrect_name = getIncorrectUser({ age: '5' });
+    await reques.post('/api/users').send(incorrect_name).expect('Content-Type', /text/).expect(400);
   });
 
   it('The age must be a number >= 0, otherwise a 400 error will be thrown.', async () => {
-    const incorect_name = Object.assign(JSON.parse(JSON.stringify(user)), { age: -5 });
-    await reques.post('/api/users').send(incorect_name).expect('Content-Type', /text/).expect(400);
+    const incorrect_name = getIncorrectUser({ age: -5 });
+    await reques.post('/api/users').send(incorrect_name).expect('Content-Type', /text/).expect(400);
   });
 
   it('The hobbies must be an array otherwise a 400 error will be thrown.', async () => {
-    const incorect_name = Object.assign(JSON.parse(JSON.stringify(user)), { age: 'array' });
-    await reques.post('/api/users').send(incorect_name).expect('Content-Type', /text/).expect(400);
+    const incorrect_name = getIncorrectUser({ age: 'array' });
+    await reques.post('/api/users').send(incorrect_name).expect('Content-Type', /text/).expect(400);
   });
 
   it('The age must be an array of string, otherwise a 400 error will be thrown.', async () => {
-    const incorect_name = Object.assign(JSON.parse(JSON.stringify(user)), { age: [4, 5] });
-    await reques.post('/api/users').send(incorect_name).expect('Content-Type', /text/).expect(400);
+    const incorrect_name = getIncorrectUser({ age: [4, 5] });
+    await reques.post('/api/users').send(incorrect_name).expect('Content-Type', /text/).expect(400);
   });
 
   it('The user object should contain username, age, hobbies only, otherwise a 400 error will be thrown.', async () => {
-    const incorect_name = Object.assign(JSON.parse(JSON.stringify(user)), { something: 'something' });
-    await reques.post('/api/users').send(incorect_name).expect('Content-Type', /text/).expect(400);
+    const incorrect_name = getIncorrectUser({ something: 'something' });
+    await reques.post('/api/users').send(incorrect_name).expect('Content-Type', /text/).expect(400);
+  });
+});
+
+describe('Checking endpoints', () => {
+  it('GET api/users/${userId}. If userId is not uuid error 400 will be thown', async () => {
+    const incorrect_uuid = '123456';
+    await reques.get(`/api/users/${incorrect_uuid}`).expect('Content-Type', /text/).expect(400);
+  });
+
+  it('GET api/users/${userId}. If record with id === userId  not exist error 404 will be thown', async () => {
+    const correct_non_exist_uuid = 'ca34f308-15bf-49ae-babf-7fd09d688274';
+    await reques.get(`/api/users/${correct_non_exist_uuid}`).expect('Content-Type', /text/).expect(404);
+  });
+
+  it('PUT api/users/{userId}. If userId is not uuid error 400 will be thown', async () => {
+    const incorrect_uuid = '123456';
+    await reques.put(`/api/users/${incorrect_uuid}`).expect('Content-Type', /text/).expect(400);
+  });
+
+  it('PUT api/users/${userId}. If record with id === userId  not exist error 404 will be thown', async () => {
+    const correct_non_exist_uuid = 'ca34f308-15bf-49ae-babf-7fd09d688274';
+    await reques.put(`/api/users/${correct_non_exist_uuid}`).expect('Content-Type', /text/).expect(404);
+  });
+
+  it('DELETE api/users/{userId}. If userId is not uuid error 400 will be thown', async () => {
+    const incorrect_uuid = '123456';
+    await reques.delete(`/api/users/${incorrect_uuid}`).expect('Content-Type', /text/).expect(400);
+  });
+
+  it('DELETE api/users/${userId}. If record with id === userId  not exist error 404 will be thown', async () => {
+    const correct_non_exist_uuid = 'ca34f308-15bf-49ae-babf-7fd09d688274';
+    await reques.delete(`/api/users/${correct_non_exist_uuid}`).expect('Content-Type', /text/).expect(404);
   });
 });
