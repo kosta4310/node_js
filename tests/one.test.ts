@@ -50,6 +50,7 @@ describe('Getting, creating, updating and deleting user with a correct data and 
     expect(age).toBe(user_update.age);
     expect(user_temp.id).toBe(id);
     expect(hobbies.length).toBe(user_update.hobbies.length);
+
     user_temp = response_after_update.body;
   });
 

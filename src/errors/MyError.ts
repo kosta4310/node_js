@@ -4,10 +4,6 @@ export class MyError extends Error {
   statusCode: number;
   constructor(message: string, statusCode: number) {
     super(message);
-
-    // Object.setPrototypeOf(this, new.target.prototype);
-
-    // Error.captureStackTrace(this);
     this.statusCode = statusCode;
   }
 }
