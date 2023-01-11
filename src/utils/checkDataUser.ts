@@ -9,7 +9,7 @@ export function isValidDataUser({ username, age, hobbies }: Omit<User, 'id'>) {
     return false;
   }
 
-  if (typeof age !== 'number') {
+  if (typeof age !== 'number' || age < 0) {
     return false;
   }
 

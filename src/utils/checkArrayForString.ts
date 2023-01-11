@@ -1,9 +1,3 @@
-export function checkArrayForString(arr: Array<any>) {
-  let isString = true;
-  arr.forEach((element) => {
-    if (typeof element !== 'string') {
-      isString = false;
-    }
-  });
-  return isString;
+export function checkArrayForString(arr: Array<string>) {
+  return arr.every((str) => typeof str === 'string');
 }
