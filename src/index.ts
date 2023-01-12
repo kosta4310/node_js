@@ -1,8 +1,8 @@
 import { createDb } from './userDb/db';
+import http from 'node:http';
 import cluster from 'node:cluster';
 import os from 'node:os';
 import process from 'node:process';
-import net from 'node:net';
 import 'dotenv/config';
 import { createWorkerServer } from './server';
 import { User } from './models/userModel';
@@ -34,37 +34,46 @@ async function startApp() {
         ports.push(PORT + i + 1);
       }
 
-      const balancer = (socket: net.Socket) => {
-        socket.on('data', (msg) => {
-          const id = count % numCores;
-          const port = ports[id];
-          const serviceSocket = new net.Socket();
+      const balancer = (req: http.IncomingMessage, res: http.OutgoingMessage) => {
+        const id = count % numCores;
+        count++;
+        const port = ports[id];
 
-          serviceSocket.connect(port, '127.0.0.1', () => {
-            serviceSocket.write(msg);
+        const options = {
+          hostname: 'localhost',
+          port: port,
+          path: req.url,
+          method: req.method,
+          headers: req.headers,
+        };
+
+        const request = http.request(options, (response) => {
+          const data: Array<Buffer> = [];
+          response.on('data', (chunk) => {
+            data.push(chunk);
           });
 
-          serviceSocket.on('data', (data) => {
-            socket.write(data);
+          response.on('end', () => {
+            res.setHeader(
+              'Content-Type',
+              response.headers['content-type'] ? response.headers['content-type'] : 'text/plain',
+            );
+            res.write(data.join().toString());
+            res.end();
           });
-
-          serviceSocket.on('close', (err) => {
-            socket.destroy();
-            if (err) {
-              console.log(`server error 500`);
-            }
-          });
-
-          count++;
         });
-        socket.on('close', (err) => {
-          if (err) {
-            console.log(`server error 500`);
-          }
+        const data: Array<Buffer> = [];
+        req.on('data', (chunk: Buffer) => {
+          data.push(chunk);
+        });
+
+        req.on('end', () => {
+          request.write(data.join().toString());
+          request.end();
         });
       };
 
-      const server = net.createServer(balancer);
+      const server = http.createServer(balancer);
       server.listen(PORT);
     } else {
       process.env.modeClusterForWorkers = 'true';
