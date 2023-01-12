@@ -25,7 +25,7 @@ npm i
 
 ```
 
-Change name of file .env.example to .env and write following down
+Change name of file .env.example to .env and write following text down
 
 ```
 
