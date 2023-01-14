@@ -15,7 +15,6 @@ export const model: Array<User> = [
 const PORT = Number(process.env.PORT) || 4000;
 const DB_PORT = Number(process.env.DB_PORT) || 8000;
 
-console.log(`hello from master port ${PORT}`);
 async function startApp() {
   const [argument] = process.argv.slice(2);
   if (argument && argument.slice(2) === 'cluster') {
@@ -23,9 +22,8 @@ async function startApp() {
 
     if (cluster.isPrimary) {
       const db_server = await createDb();
-      db_server.listen(DB_PORT, () => console.log(`db is started on port ${DB_PORT}`));
-      console.log(`Master pid: ${process.pid} port ${PORT}`);
-      // console.log(`Starting ${cpus} forks`);
+      db_server.listen(DB_PORT, () => console.log(`Database is started on port ${DB_PORT}`));
+      console.log(`Master pid ${process.pid} is started on port ${PORT} and will start ${numCores} workers`);
 
       const ports: Array<number> = [];
 
@@ -48,11 +46,9 @@ async function startApp() {
 
           serviceSocket.on('data', (data) => {
             socket.write(data);
-            console.log('end');
           });
 
           serviceSocket.on('close', (err) => {
-            console.log(`close proxy ${serviceSocket.destroyed}`);
             socket.destroy();
             if (err) {
               console.log(`server error 500`);
@@ -62,7 +58,6 @@ async function startApp() {
           count++;
         });
         socket.on('close', (err) => {
-          console.log(`close client ${socket.destroyed}`);
           if (err) {
             console.log(`server error 500`);
           }
@@ -75,15 +70,12 @@ async function startApp() {
       process.env.modeClusterForWorkers = 'true';
       const port = Number(process.env.workerPort);
       const server = await createWorkerServer();
-      server.listen(port, () => console.log(`worker port ${process.env.workerPort}`));
+      server.listen(port, () => console.log(`Worker pid ${process.pid} is started on port ${process.env.workerPort}`));
       dbsocket.connect(DB_PORT, '127.0.0.1', () => {
-        console.log(`connect to db pid ${process.pid}`);
+        console.log(`Worker pid ${process.pid} connected to database`);
       });
     }
   } else {
-    // const db_server = await createDb();
-    // db_server.listen(DB_PORT, () => console.log(`db is started on port ${DB_PORT}`));
-    // console.log(`dbport: ${process.env.DB_PORT}`);
     const appServer = await createWorkerServer();
     appServer.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   }
