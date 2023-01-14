@@ -1,4 +1,3 @@
-import { createUser, deleteUser, getUser, getUsers, putUser } from '../controllers/controller';
 import { MyError } from '../errors/MyError';
 import { httpStatusCodes } from '../httpStatusCodes';
 import { routes } from '../constants/routes';
