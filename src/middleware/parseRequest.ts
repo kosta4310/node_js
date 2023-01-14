@@ -1,23 +1,29 @@
 import { createUser, deleteUser, getUser, getUsers, putUser } from '../controllers/controller';
 import { MyError } from '../errors/MyError';
 import { httpStatusCodes } from '../httpStatusCodes';
+import { routes } from '../constants/routes';
+import { endpoints } from '../constants/endpoints';
 import { Req, Res } from '../server';
 
 async function parseRequest(req: Req, res: Res) {
   try {
-    if (req.method === 'GET' && req.url?.match(/^(\/api\/users)$/)) {
-      await getUsers(req, res);
-    } else if (req.method === 'POST' && req.url?.match(/^(\/api\/users)$/)) {
-      await createUser(req, res);
-    } else if (req.method === 'GET' && req.url?.match(/^(\/api\/users)\/[0-9a-z-]+$/)) {
-      await getUser(req, res);
-    } else if (req.method === 'PUT' && req.url?.match(/^(\/api\/users)\/[0-9a-z-]+$/)) {
-      await putUser(req, res);
-    } else if (req.method === 'DELETE' && req.url?.match(/^(\/api\/users)\/[0-9a-z-]+$/)) {
-      await deleteUser(req, res);
-    } else {
-      res.writeHead(httpStatusCodes.NOT_FOUND, { 'Content-Type': 'text' });
-      res.end('The server cannot find the requested resource.');
+    for (const method in endpoints) {
+      if (Object.hasOwnProperty.call(endpoints, method)) {
+        if (method === req.method) {
+          const endpoint = endpoints[method];
+          for (const route in endpoint) {
+            if (Object.hasOwnProperty.call(endpoint, route)) {
+              if (req.url?.match(routes[route])) {
+                const callback = endpoints[method][route];
+                await callback(req, res);
+                return;
+              }
+            }
+          }
+          res.writeHead(httpStatusCodes.NOT_FOUND, { 'Content-Type': 'text' });
+          res.end('The server cannot find the requested resource.');
+        }
+      }
     }
   } catch (error) {
     if (error instanceof MyError) {
