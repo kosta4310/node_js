@@ -78,6 +78,9 @@ async function startApp() {
   } else {
     const appServer = await createWorkerServer();
     appServer.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    process.on('SIGINT', () => {
+      appServer.close();
+    });
   }
 }
 
