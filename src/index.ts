@@ -34,7 +34,7 @@ async function startApp() {
         ports.push(PORT + i + 1);
       }
 
-      const balancer = (req: http.IncomingMessage, res: http.OutgoingMessage) => {
+      const balancer = (req: http.IncomingMessage, res: http.ServerResponse) => {
         const id = count % numCores;
         count++;
         const port = ports[id];
@@ -54,6 +54,7 @@ async function startApp() {
           });
 
           response.on('end', () => {
+            res.statusCode = Number(response.statusCode);
             res.setHeader(
               'Content-Type',
               response.headers['content-type'] ? response.headers['content-type'] : 'text/plain',
@@ -73,7 +74,7 @@ async function startApp() {
         });
       };
 
-      const server = http.createServer(balancer);
+      const server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse> = http.createServer(balancer);
       server.listen(PORT);
     } else {
       process.env.modeClusterForWorkers = 'true';
